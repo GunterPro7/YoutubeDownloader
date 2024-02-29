@@ -1,0 +1,1 @@
+English;Hexagon;True;True
