@@ -457,48 +457,54 @@ def prepare_playlist_download():
 
 def continue_downloading():
     global playlist_lst, playlist_formats, playlist_index, orig_name
-    prev_name = get_resolutions(playlist_lst[playlist_index])[1]
-    download_button.place_forget()
-    final_name = ""
-    for a in prev_name:
-        if a not in '\\/:*?<>|"':
-            final_name += a
+    try:
+        prev_name = get_resolutions(playlist_lst[playlist_index])[1]
+        download_button.place_forget()
+        final_name = ""
+        for a in prev_name:
+            if a not in '\\/:*?<>|"':
+                final_name += a
 
-    name.set(final_name)
-    if switch_playlist_same_quality_var == "False":
-        download_yt_video_mp4(playlist_lst[playlist_index], playlist_formats[playlist_index]["Format"],
-                              playlist_formats[playlist_index]["Audio"], playlist_formats[playlist_index]["Pixel"][
-                                                                         :playlist_formats[playlist_index]["Pixel"].find(
-                                                                             "p") + 1],
-                            playlist_formats[playlist_index]["Pixel"])
-    else:
-        try:
-            download_yt_video_mp4(playlist_lst[playlist_index], playlist_formats[0]["Format"],
-                                  playlist_formats[0]["Audio"], playlist_formats[0]["Pixel"][
-                                                                             :playlist_formats[0][
-                                                                                  "Pixel"].find(
-                                                                                 "p") + 1],
-                                  playlist_formats[0]["Pixel"])
-        except Exception as err:
-            tempQuality = get_resolutions(playlist_lst[playlist_index])[0][-1]
-            download_yt_video_mp4(playlist_lst[playlist_index], playlist_formats[0]["Format"],
-                                  playlist_formats[0]["Audio"], tempQuality[
-                                                                :tempQuality.find(
-                                                                    "p") + 1],
-                                  tempQuality)
-    hidden_text.config(
-        text=language_dict[cur_l][27] + " " + str(playlist_index + 2) + "/" + str(len(playlist_lst)) + " " * 30)
-    playlist_index += 1
-    if playlist_index != len(playlist_lst):
-        root.after(50, continue_downloading)
-    else:
+        name.set(final_name)
+        if switch_playlist_same_quality_var == "False":
+            download_yt_video_mp4(playlist_lst[playlist_index], playlist_formats[playlist_index]["Format"],
+                                playlist_formats[playlist_index]["Audio"], playlist_formats[playlist_index]["Pixel"][
+                                                                            :playlist_formats[playlist_index]["Pixel"].find(
+                                                                                "p") + 1],
+                                playlist_formats[playlist_index]["Pixel"])
+        else:
+            try:
+                download_yt_video_mp4(playlist_lst[playlist_index], playlist_formats[0]["Format"],
+                                    playlist_formats[0]["Audio"], playlist_formats[0]["Pixel"][
+                                                                                :playlist_formats[0][
+                                                                                    "Pixel"].find(
+                                                                                    "p") + 1],
+                                    playlist_formats[0]["Pixel"])
+            except Exception as err:
+                tempQuality = get_resolutions(playlist_lst[playlist_index])[0][-1]
+                download_yt_video_mp4(playlist_lst[playlist_index], playlist_formats[0]["Format"],
+                                    playlist_formats[0]["Audio"], tempQuality[
+                                                                    :tempQuality.find(
+                                                                        "p") + 1],
+                                    tempQuality)
         hidden_text.config(
-            text=language_dict[cur_l][27] + " " + str(len(playlist_lst)) + "/" + str(len(playlist_lst)) + " " * 30)
-        name.set(orig_name)
-        set_pixel_back()
-        hidden_text.config(text=language_dict[cur_l][19])
-        os.chdir("..")
-        return
+            text=language_dict[cur_l][27] + " " + str(playlist_index + 2) + "/" + str(len(playlist_lst)) + " " * 30)
+        playlist_index += 1
+        if playlist_index != len(playlist_lst):
+            root.after(50, continue_downloading)
+        else:
+            hidden_text.config(
+                text=language_dict[cur_l][27] + " " + str(len(playlist_lst)) + "/" + str(len(playlist_lst)) + " " * 30)
+            name.set(orig_name)
+            set_pixel_back()
+            hidden_text.config(text=language_dict[cur_l][19])
+            os.chdir("..")
+            return
+    except Exception:
+        print("Video is age restricted! Skipping!")
+        playlist_index += 1
+        if playlist_index != len(playlist_lst):
+            root.after(50, continue_downloading)
 
 
 def download_yt_video_mp4(*args):
