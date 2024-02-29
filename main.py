@@ -271,10 +271,11 @@ def get_resolutions(link):
         if last_[:last_.find("p")] != e[:e.find("p")]:
             if e.startswith("720p"):
                 try:
-                    if int(e[-7:-5]) > 30:
+                    quality = checkForNumber(e[-7:-5])
+                    if int(quality) > 30:
                         final_return_lst.append("720p30-fast")
                     else:
-                        final_return_lst.append("720p" + checkForNumber(e[-7:-5]) + "-fast")
+                        final_return_lst.append("720p" + quality + "-fast")
                 except Exception as err:
                     print("An Error occured - Some details (skipping video and continue downloading): ", err, "\n\n",
                           "E:", e, " FinalReturnList:", final_return_lst, "_last", last_)
