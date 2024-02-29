@@ -285,9 +285,9 @@ def get_resolutions(link):
                     if int(e[-7:-5]) > 30:
                         final_return_lst.append("720p30-fast")
                     else:
-                        final_return_lst.append("720p" + e[-7:-5] + "-fast")
+                        final_return_lst.append("720p" + checkForNumber(e[-7:-5]) + "-fast")
                 except Exception as err:
-                    print("An Error occured - Please go to an admin for help - Some important things: ", err, "\n\n",
+                    print("An Error occured - Some details (skipping video and continue downloading): ", err, "\n\n",
                           "E:", e, " FinalReturnList:", final_return_lst, "_last", last_)
             else:
                 final_return_lst.append(e)
@@ -602,14 +602,12 @@ def download_yt_video_mp4(*args):
                     try:
                         os.system('del "' + setname() + '_temp.mp3"')
                     except Exception as err:
-                        print("BITTE GIB MIR (FLORIAN) DIESE NACHRICHT WEITER; IST WICHTIG :) -> ", err)
-                        pass
+                        print("Error occurred twice :) -> ", err)
                     hidden_text.config(text=language_dict[cur_l][17])
                     root.title(language_dict[cur_l][0])
                     print("Download Failed! Err:", str(err) + ",", str(err2))
                     print("If in Playlist download Queue, Retrying...")
                     raise "Unsupported Quality Error"
-                    return
     else:
         try:
             yt = YouTube(_link)
@@ -739,6 +737,15 @@ def setPlaylistFormat():
     new_format_dict = {"Format": mp3_mp4.get(), "Audio": fast_fancy.get(), "Pixel": option_lst.get()}
     playlist_formats[counter_playlist] = new_format_dict
 
+
+def checkForNumber(numberString):
+    newNumber = ""
+
+    for c in numberString:
+        if c.isdigit():
+            newNumber += c
+
+    return newNumber
 
 link = StringVar()
 link_entry = tk.Entry(root, textvariable=link, font=('calibre', 10, 'normal'), width=49)
