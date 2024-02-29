@@ -1,5 +1,7 @@
 import time
 
+win32installed = True
+
 try:
     import os
     from pytube import YouTube, Playlist
@@ -11,22 +13,9 @@ try:
     import win32gui, win32con
     import moviepy.editor as mpe
 except ModuleNotFoundError:
-    os.system("start cmd.exe /c pip install tk")
-    os.system("start cmd.exe /c pip install pytube")
-    os.system("start cmd.exe /c pip install youtube_dl")
-    os.system("start cmd.exe /c pip install pillow")
-    os.system("start cmd.exe /c pip install pywin32")
-    os.system("start cmd.exe /c pip install moviepy")
-    time.sleep(20)
-    import os
-    from pytube import YouTube, Playlist
-    import tkinter as tk
-    from tkinter import ttk
-    import youtube_dl
-    from tkinter import *
-    from PIL import ImageTk
-    import win32gui, win32con
-    import moviepy.editor as mpe
+    win32installed = False
+except ImportError as e:
+    print("Module could not be importet 'ImportError'" + str(e))
 
 root = tk.Tk()
 label = tk.Label(root, fg="green")
@@ -237,7 +226,7 @@ c3.create_text(80, 97, text=language_dict[cur_l][8], font=('Comic Sans MS', 12, 
 c3.create_text(95, 131, text=language_dict[cur_l][30], font=('Comic Sans MS', 12, 'normal'), fill="white")
 c3.create_text(130, 260, text=language_dict[cur_l][23], font=('Comic Sans MS', 12, 'normal'), fill="white")
 
-if command_line == "False":
+if command_line == "False" and win32installed:
     hide = win32gui.GetForegroundWindow()
     win32gui.ShowWindow(hide, win32con.SW_HIDE)
 
