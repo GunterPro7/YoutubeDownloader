@@ -30,7 +30,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='main',
+    name='YouTubeToMp3',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
