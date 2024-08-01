@@ -1,12 +1,12 @@
 import os
 import time
+from tkinter import StringVar
 
 import youtube_dl
 from pytube import YouTube, Playlist
 
 from src.audiolib import audio_merger
 from src.main import gui_handler, config, language
-from src.utils.file_utils import setname
 from src.utils.utils import checkForNumber
 
 
@@ -64,10 +64,8 @@ def get_resolutions(link: str):
     return final_return_lst, yt.title
 
 
-def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2) -> str:
+def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name: StringVar) -> str:
     print(format_, format_2)
-
-    gui_handler.root.title(language.get_idx(11))
     print("Downloading...")
 
     if "list" in _link:
@@ -81,11 +79,11 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2) -> st
             gui_handler.root.title(language.get_idx(0))
             print("Download Failed! Err:", str(err))
             return language.get_idx(9)
-        if setname() == None:
+        if setname(name, _mp3_mp4) == None:
             print("Download Failed! Err: No filename set!")
             return language.get_idx(14)
         else:
-            if (setname() + ".mp4") in os.listdir():
+            if (setname(name, _mp3_mp4) + ".mp4") in os.listdir():
                 print("Download Failed! Err: File already exists!")
                 return language.get_idx(15)
             try:
@@ -94,16 +92,16 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2) -> st
                     print("Download Failed! Err: No pixel Quality set!")
                     return language.get_idx(16)
                 if format_.startswith("360p") or format_.startswith("720p"):
-                    yt.streams.filter(file_extension="mp4", res=format_).first().download(filename=setname() + ".mp4")
+                    yt.streams.filter(file_extension="mp4", res=format_).first().download(filename=setname(name, _mp3_mp4) + ".mp4")
                     return language.get_idx(19)
                 elif format_2.startswith("144p-"):
-                    yt.streams.filter().first().download(filename=setname() + ".mp4")
+                    yt.streams.filter().first().download(filename=setname(name, _mp3_mp4) + ".mp4")
                     return language.get_idx(19)
                 else:
                     if _fast_fancy == language.get_idx(24):
-                        yt.streams.filter(only_audio=True).first().download(filename=setname() + "_temp.mp3")
+                        yt.streams.filter(only_audio=True).first().download(filename=setname(name, _mp3_mp4) + "_temp.mp3")
                     else:
-                        ydl_opts2 = {'format': '140', 'outtmpl': setname() + ".m4a"}
+                        ydl_opts2 = {'format': '140', 'outtmpl': setname(name, _mp3_mp4) + ".m4a"}
                         for _ in range(10):
                             try:
                                 with youtube_dl.YoutubeDL(ydl_opts2) as ydl2:
@@ -112,31 +110,31 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2) -> st
                                 print("An Error occurred! (403 Forbidden) Retrying:", _)
                                 continue
                             else:
-                                os.rename(setname() + ".m4a", setname() + "_temp.mp3")
+                                os.rename(setname(name, _mp3_mp4) + ".m4a", setname(name, _mp3_mp4) + "_temp.mp3")
                                 break
 
                     yt.streams.filter(file_extension="mp4", res=format_).first().download(
-                        filename=setname() + "_temp.mp4")
+                        filename=setname(name, _mp3_mp4) + "_temp.mp4")
                     # print(option_lst.get()[option_lst.get().find("p")+1:])
 
-                    audio_merger.combine_audio(setname() + ".mp4", int(format_2[format_2.find("p") + 1:]))
+                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", int(format_2[format_2.find("p") + 1:]))
 
-                    os.system('del "' + setname() + '_temp.mp3"')
-                    os.system('del "' + setname() + '_temp.mp4"')
+                    os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
+                    os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp4"')
 
             except AttributeError as err:
                 print("Failed to download with 'pytube', trying with 'youtube-dl' now!")
                 try:
-                    ydl_opts = {'format': "mp4[height=" + format_[:-1] + "]", 'outtmpl': setname() + "_temp.mp4"}
+                    ydl_opts = {'format': "mp4[height=" + format_[:-1] + "]", 'outtmpl': setname(name, _mp3_mp4) + "_temp.mp4"}
                     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                         ydl.download([_link])
-                    audio_merger.combine_audio(setname() + ".mp4", int(format_2[format_2.find("p") + 1:]))
+                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", int(format_2[format_2.find("p") + 1:]))
 
-                    os.system('del "' + setname() + '_temp.mp3"')
-                    os.system('del "' + setname() + '_temp.mp4"')
+                    os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
+                    os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp4"')
                 except Exception as err2:
                     try:
-                        os.system('del "' + setname() + '_temp.mp3"')
+                        os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
                     except Exception as err:
                         print("Error occurred twice :) -> ", err)
                     print("Download Failed! Err:", str(err) + ",", str(err2))
@@ -148,17 +146,17 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2) -> st
         except Exception as err:
             print("Download Failed! Err:", str(err))
             return language.get_idx(9)
-        if setname() == None:
+        if setname(name, _mp3_mp4) == None:
             print("Download Failed! Err: No filename set!")
             return language.get_idx(14)
         else:
-            if (setname() + ".mp3") in os.listdir():
+            if (setname(name, _mp3_mp4) + ".mp3") in os.listdir():
                 print("Download Failed! Err: File already exists!")
                 return language.get_idx(15)
             if _fast_fancy == language.get_idx(24):
-                yt.streams.filter(only_audio=True).first().download(filename=setname() + ".mp3")
+                yt.streams.filter(only_audio=True).first().download(filename=setname(name, _mp3_mp4) + ".mp3")
             else:
-                ydl_opts2 = {'format': '140', 'outtmpl': setname() + ".m4a"}
+                ydl_opts2 = {'format': '140', 'outtmpl': setname(name, _mp3_mp4) + ".m4a"}
                 for _ in range(10):
                     try:
                         with youtube_dl.YoutubeDL(ydl_opts2) as ydl2:
@@ -168,10 +166,22 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2) -> st
                         continue
                     else:
                         final_name = ""
-                        for a in setname():
+                        for a in setname(name, _mp3_mp4):
                             if a not in '\\/:*?<>|"':
                                 final_name += a
-                        os.rename(setname() + ".m4a", final_name + ".mp3")
+                        os.rename(setname(name, _mp3_mp4) + ".m4a", final_name + ".mp3")
                         break
         print("Download Complete")
     return language.get_idx(19)
+
+
+def setname(name, mp3_mp4):
+    name2 = str(name.get())
+    if name2 == "":
+        return
+    else:
+        if name2[-4:] == ".mp3" and str(mp3_mp4.get()) == "mp3" or name2[-4:] == ".mp4" and str(mp3_mp4.get()) == "mp4":
+            return name2[:-4]
+
+        else:
+            return name2

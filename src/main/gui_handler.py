@@ -6,7 +6,8 @@ from tkinter import *
 
 from pytube import Playlist
 
-from src.main import config, language, downloader
+from src.main import config, language
+from src.youtube import downloader
 
 try:
     import win32con, win32gui
@@ -175,10 +176,11 @@ def init_canvas_content():
 def download_yt_video(*args):
     root.title(language.get_idx(11))
     if args != ():
-        result = downloader.download_yt_video_mp4(*args)
+        result = downloader.download_yt_video_mp4(*args, name=name)
     else:
         result = downloader.download_yt_video_mp4(link.get(), mp3_mp4.get(), fast_fancy.get(),
-                                                  option_lst.get()[:option_lst.get().find("p") + 1], option_lst.get())
+                                                  option_lst.get()[:option_lst.get().find("p") + 1], option_lst.get(),
+                                                  name)
     hidden_text.config(text=result)
 
 
