@@ -1,6 +1,7 @@
 import os
 from tkinter import *
 
+from src.logger.logger import *
 from src.main import language
 from src.main.language import language_dict
 from src.utils import utils
@@ -70,7 +71,7 @@ def load_data_file():
         with open("data.txt") as file:
             user_data = str(file.read()).split(";")
             # read data
-            print(*user_data)
+            info("Loaded user data: " + '; '.join(user_data))
             command_line = utils.to_bool(user_data[2])
             switch_advanced_using_var = utils.to_bool(user_data[2])
             switch_playlist_same_quality_var = utils.to_bool(user_data[3])
@@ -83,7 +84,7 @@ def load_data_file():
 
 
 def repair_data():
-    print("Invalid data detected! Reseting data...")
+    error("Invalid data detected! Reseting data...")
     with open("data.txt", "w") as file:
         file.write("English;Bubbles;False;True")  # standards
 

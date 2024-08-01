@@ -16,24 +16,24 @@ def __init__():
     info("Initializing logger")
 
 
-def success(message: str) -> None:
-    _print(message, 32, _Type.success)
+def success(*message: str) -> None:
+    _print(' '.join(message), 32, _Type.success)
 
 
-def log(message: str) -> None:
-    _print(message, 38, _Type.log)
+def log(*message: str) -> None:
+    _print(' '.join(message), 38, _Type.log)
 
 
-def info(message: str) -> None:
-    _print(message, 34, _Type.info)
+def info(*message: str) -> None:
+    _print(' '.join(message), 34, _Type.info)
 
 
-def warn(message: str) -> None:
-    _print(message, 33, _Type.warn)
+def warn(*message: str) -> None:
+    _print(' '.join(message), 33, _Type.warn)
 
 
-def error(message: str) -> None:
-    _print(message, 31, _Type.error)
+def error(*message: str) -> None:
+    _print(' '.join(message), 31, _Type.error)
 
 
 class _Type(Enum):

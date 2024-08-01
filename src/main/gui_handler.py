@@ -1,4 +1,3 @@
-import os
 import time
 import tkinter as tk
 from tkinter import ttk
@@ -6,6 +5,7 @@ from tkinter import *
 
 from pytube import Playlist
 
+from src.logger.logger import *
 from src.main import config, language
 from src.youtube import downloader
 
@@ -52,9 +52,6 @@ counter_playlist = 0
 playlist_last = ""
 orig_name = "None"
 
-def get_playlist_backwards_button():
-    print(playlist_backwards_button)
-
 # Global Variables
 settings_ = True
 mp3_mp4_var__ = "mp3"
@@ -63,6 +60,20 @@ mp3_mp4_var__ = "mp3"
 def __main__():
     global root
     root = tk.Tk()
+    success("""
+    __  __            __        __       ______      __  ___     _____    
+    \\ \\/ /___  __  __/ /___  __/ /_  ___/_  __/___  /  |/  /___ |__  /    
+     \\  / __ \\/ / / / __/ / / / __ \\/ _ \\/ / / __ \\/ /|_/ / __ \\ /_ <     
+     / / /_/ / /_/ / /_/ /_/ / /_/ /  __/ / / /_/ / /  / / /_/ /__/ /     
+    /_/\\____/\\__,_/\\__/\\__,_/_.___/\\___/_/  \\____/_/  /_/ .___/____/   
+                                                       /_/
+        __             ______            __            ____          _____
+       / /_  __  __   / ____/_  ______  / /____  _____/ __ \\________/__  /
+      / __ \\/ / / /  / / __/ / / / __ \\/ __/ _ \\/ ___/ /_/ / ___/ __ \\/ / 
+     / /_/ / /_/ /  / /_/ / /_/ / / / / /_/  __/ /  / ____/ /  / /_/ / /  
+    /_.___/\\__, /   \\____/\\__,_/_/ /_/\\__/\\___/_/  /_/   /_/   \\____/_/   
+          /____/                                                          
+    """)
 
 
 def __setup__():
@@ -214,7 +225,7 @@ def display_options(*event):
     valid = downloader.valid_link(link.get())  # check the validity of link
     if not valid:
         hidden_text.config(text=language.get_idx(9))
-        print("Loading Video/Audio Failed! Error: URL-Not Found 404")
+        error("Loading Video/Audio Failed! Error: URL-Not Found 404")
         return
 
     hidden_text.config(text=language.get_idx(20))
@@ -230,7 +241,7 @@ def display_options(*event):
 
     if "list" in url:
         url = url.split("&list")[0]
-    print(url)
+    log("Loading Options from url: " + url)
 
     video_data = get_resolutions(url)
 
@@ -276,7 +287,7 @@ def prepare_playlist_download():
     global playlist_index, orig_name
     playlist_index = 0
     orig_name = name.get()
-    print(orig_name)
+    log("Saving into Folder: " + orig_name)
     try:
         os.chdir(orig_name)
     except FileNotFoundError:
@@ -285,7 +296,7 @@ def prepare_playlist_download():
     else:
         hidden_text.config(text=language.get_idx(15))
         return
-    print("Downloading in directory --> " + os.getcwd())
+    log("Downloading in directory --> " + os.getcwd())
 
     root.after(50, continue_downloading)
 
@@ -336,7 +347,7 @@ def continue_downloading():
             os.chdir("..")
             return
     except Exception:
-        print("Video is age restricted! Skipping!")
+        warn("Video is age restricted! Skipping! Link: " + link.get())
         playlist_index += 1
         if playlist_index != len(playlist_lst):
             root.after(50, continue_downloading)
