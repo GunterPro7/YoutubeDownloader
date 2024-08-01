@@ -9,7 +9,6 @@ def __main__():
     gui_handler.__main__()
 
     # Run Gui
-    downloader.test()
     gui_handler.__run__()
 
 

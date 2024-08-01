@@ -1,7 +1,10 @@
 import os
+import time
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
+
+from pytube import Playlist
 
 from src.main import config, language, downloader
 
@@ -71,7 +74,7 @@ def __setup__():
 
     label = tk.Label(root, fg="green")
     root.geometry("530x300")
-    root.resizable(0, 0)
+    root.resizable(False, False)
     root.title(language.get_idx(0))
 
     if config.command_line == "False" and win32installed:
@@ -129,7 +132,7 @@ def init_canvas_content():
     dropdown_mp_.place(x=125, y=100)
 
     download_button = tk.Button(root, text=language.get_idx(26), height=3, width=11, border=5,
-                                command=downloader.prepare_download)
+                                command=prepare_download)
     download_button.place(x=400, y=212)
 
     hidden_text = tk.Label(root, text=language.get_idx(20), fg="black", font=('Comic Sans MS', 10, 'normal'),
@@ -144,7 +147,7 @@ def init_canvas_content():
     audio_dropdown.place(x=280, y=100)
 
     option_lst = StringVar()
-    link.trace('w', downloader.display_options)
+    link.trace('w', display_options)
     option_lst.set(language.get_idx(21))
     options = ttk.Combobox(root, textvariable=option_lst, state="readonly", width=14)
 
@@ -165,16 +168,248 @@ def init_canvas_content():
     video_playlist_dropdown = OptionMenu(root, playlist_dropdown, "Video", "Playlist", command=change_playlist_vid)
     video_playlist_dropdown.place(x=430, y=100)
 
-    playlist_forward_button = tk.Button(root, text='', height=35, width=32, border=5, command=downloader.forwards_playlist,
+    playlist_forward_button = tk.Button(root, text='', height=35, width=32, border=5, command=forwards_playlist,
                                         image=config.playlist_forwards)
-    playlist_backwards_button = tk.Button(root, text='', height=35, width=32, border=5, command=downloader.backwards_playlist,
+    playlist_backwards_button = tk.Button(root, text='', height=35, width=32, border=5, command=backwards_playlist,
                                           image=config.playlist_backwards)
 
     advanced_using_button = tk.Button(root, text='', height=1, width=2, border=5, command=switch_advanced_using)
     playlist_same_quality = tk.Button(root, text='', height=1, width=2, border=5, command=switch_playlist_same_quality)
 
+
+def download_yt_video(*args):
+    root.title(language.get_idx(11))
+    result = downloader.download_yt_video_mp4(args, option_lst=option_lst)
+    hidden_text.config(text=result)
+
+
+def get_resolutions(link: str):
+    download_button.place(x=400, y=212)
+    return downloader.get_resolutions(link)
+
+
+def display_options(*event):
+    global lst_formats, resolutions, playlist_dropdown, counter_playlist, playlist_lst, playlist_formats, playlist_dropdown, playlist_last
+    if link.get() == "":
+        hidden_text.config(text=language.get_idx(20))
+        text_title.config(text=language.get_idx(10))
+        return
+    if playlist_dropdown.get() == "Playlist":
+        if playlist_last != link.get() or playlist_lst == []:
+            text_title.config(text=language.get_idx(10))
+            playlist_lst = Playlist(link.get()).video_urls
+            try:
+                playlist_formats = [
+                    {"Format": "mp3", "Audio": language.get_idx(24), "Pixel": language.get_idx(21)} for _ in
+                    range(len(playlist_lst))]
+            except KeyError:
+                hidden_text.config(text=language.get_idx(9))
+                return
+            counter_playlist = 0
+            playlist_last = link.get()
+            # formate zurücksetzen
+            setIngameFormat()
+
+    valid = downloader.valid_link(link.get())  # check the validity of link
+    if not valid:
+        hidden_text.config(text=language.get_idx(9))
+        print("Loading Video/Audio Failed! Error: URL-Not Found 404")
+        return
+
+    hidden_text.config(text=language.get_idx(20))
+    if playlist_dropdown.get() == "Playlist":
+        url = playlist_lst[counter_playlist]
+    else:
+        url = link.get()
+        options.set(language.get_idx(21))
+
+    ydl_opts = {}
+    resolutions = []
+    lst_formats = []
+
+    if "list" in url:
+        url = url.split("&list")[0]
+    print(url)
+
+    video_data = get_resolutions(url)
+
+    if playlist_dropdown.get() == "Video":
+        text_title.config(text=f'{language.get_idx(10)} {video_data[1][:41]}')
+    else:
+        text_title.config(
+            text=f'{language.get_idx(10)} {video_data[1][:33]} - {counter_playlist + 1} / {len(playlist_lst)}')
+
+    options['values'] = video_data[0]  # sets combobox values to available resolutions
+
+
+def prepare_download():
+    global playlist_dropdown, playlist_lst
+    while os.getcwd().split("\\")[-1] in ["Videos_Audios", "data", orig_name]:
+        os.chdir("..")
+    try:
+        os.chdir("Videos_Audios")
+    except FileNotFoundError:
+        os.makedirs("Videos_Audios")
+        os.chdir("Videos_Audios")
+    time.sleep(0.15)
+    if playlist_dropdown.get() == "Video":
+        root.after(15, download_yt_video)
+        hidden_text.config(text=language.get_idx(27) + " " * 45)
+        download_button.place_forget()
+        root.after(100, set_pixel_back)
+    else:
+        if name.get() == "":
+            hidden_text.config(text=language.get_idx(14))
+            return
+        try:
+            setPlaylistFormat()
+        except NameError:
+            hidden_text.config(text=language.get_idx(13))
+            return
+        download_button.place_forget()
+        root.after(15, prepare_playlist_download)
+        hidden_text.config(text=language.get_idx(27) + " 1/" + str(len(playlist_lst)) + " " * 30)
+
+
+def prepare_playlist_download():
+    global playlist_index, orig_name
+    playlist_index = 0
+    orig_name = name.get()
+    print(orig_name)
+    try:
+        os.chdir(orig_name)
+    except FileNotFoundError:
+        os.makedirs(orig_name)
+        os.chdir(orig_name)
+    else:
+        hidden_text.config(text=language.get_idx(15))
+        return
+    print("Downloading in directory --> " + os.getcwd())
+
+    root.after(50, continue_downloading)
+
+
+def continue_downloading():
+    global playlist_lst, playlist_formats, playlist_index, orig_name
+    try:
+        prev_name = get_resolutions(playlist_lst[playlist_index])[1]
+        download_button.place_forget()
+        final_name = ""
+        for a in prev_name:
+            if a not in '\\/:*?<>|"':
+                final_name += a
+
+        name.set(final_name)
+        if not config.switch_playlist_same_quality_var:
+            download_yt_video(playlist_lst[playlist_index], playlist_formats[playlist_index]["Format"],
+                                playlist_formats[playlist_index]["Audio"], playlist_formats[playlist_index]["Pixel"][
+                                                                            :playlist_formats[playlist_index]["Pixel"].find(
+                                                                                "p") + 1],
+                                playlist_formats[playlist_index]["Pixel"])
+        else:
+            try:
+                download_yt_video(playlist_lst[playlist_index], playlist_formats[0]["Format"],
+                                    playlist_formats[0]["Audio"], playlist_formats[0]["Pixel"][
+                                                                                :playlist_formats[0][
+                                                                                    "Pixel"].find(
+                                                                                    "p") + 1],
+                                    playlist_formats[0]["Pixel"])
+            except Exception as err:
+                tempQuality = get_resolutions(playlist_lst[playlist_index])[0][-1]
+                download_yt_video(playlist_lst[playlist_index], playlist_formats[0]["Format"],
+                                    playlist_formats[0]["Audio"], tempQuality[
+                                                                    :tempQuality.find(
+                                                                        "p") + 1],
+                                    tempQuality)
+        hidden_text.config(
+            text=language.get_idx(27) + " " + str(playlist_index + 2) + "/" + str(len(playlist_lst)) + " " * 30)
+        playlist_index += 1
+        if playlist_index != len(playlist_lst):
+            root.after(50, continue_downloading)
+        else:
+            hidden_text.config(
+                text=language.get_idx(27) + " " + str(len(playlist_lst)) + "/" + str(len(playlist_lst)) + " " * 30)
+            name.set(orig_name)
+            set_pixel_back()
+            hidden_text.config(text=language.get_idx(19))
+            os.chdir("..")
+            return
+    except Exception:
+        print("Video is age restricted! Skipping!")
+        playlist_index += 1
+        if playlist_index != len(playlist_lst):
+            root.after(50, continue_downloading)
+
+
+def forwards_playlist():
+    global playlist_lst, counter_playlist
+    try:
+        setPlaylistFormat()
+    except NameError:
+        hidden_text.config(text=language.get_idx(28))
+    if playlist_lst == []:
+        hidden_text.config(text=language.get_idx(28))
+        return
+    if counter_playlist != len(playlist_lst) - 1:
+        counter_playlist += 1
+    else:
+        hidden_text.config(text=language.get_idx(29))
+        return
+    setIngameFormat()
+
+
+def backwards_playlist():
+    global playlist_lst, counter_playlist
+    try:
+        setPlaylistFormat()
+    except NameError:
+        hidden_text.config(text=language.get_idx(28))
+    if playlist_lst == []:
+        hidden_text.config(text=language.get_idx(28))
+        return
+    if counter_playlist != 0:
+        counter_playlist -= 1
+    else:
+        hidden_text.config(text=language.get_idx(29))
+        return
+    setIngameFormat()
+
+
 def change_playlist_vid(var):
-    downloader.change_playlist_vid(var)
+    if var == "Playlist" and not config.switch_playlist_same_quality_var:
+        playlist_forward_button.place(x=449, y=147)
+        playlist_backwards_button.place(x=400, y=147)
+    else:
+        playlist_forward_button.place_forget()
+        playlist_backwards_button.place_forget()
+    display_options()
+
+
+def setIngameFormat():
+    global playlist_formats
+    if playlist_formats[counter_playlist]["Format"] == "mp4":
+        options.place(x=160, y=155)
+
+        c2.place(x=0, y=0)
+        c1.place_forget()
+        mp3_mp4.set("mp4")
+    else:
+        options.place_forget()
+
+        c1.place(x=0, y=0)
+        c2.place_forget()
+        mp3_mp4.set("mp3")
+    global fast_fancy, option_lst
+    fast_fancy.set(playlist_formats[counter_playlist]["Audio"])
+    option_lst.set(playlist_formats[counter_playlist]["Pixel"])
+    display_options()
+
+
+def setPlaylistFormat():
+    global counter_playlist, playlist_formats, mp3_mp4, option_lst
+
+    new_format_dict = {"Format": mp3_mp4.get(), "Audio": fast_fancy.get(), "Pixel": option_lst.get()}
+    playlist_formats[counter_playlist] = new_format_dict
 
 
 def set_bg_and_image(image__):
