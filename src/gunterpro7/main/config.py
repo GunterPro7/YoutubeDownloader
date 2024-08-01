@@ -33,26 +33,8 @@ def __main__():
     set_bg = StringVar()
     set_language = StringVar()
 
-    data_file_path = os.getenv('LOCALAPPDATA') + "\\GunterPro7\\youtubeToMp3\\"
+    data_file_path = os.path.join(os.getcwd(), "_internal")
     os.makedirs(data_file_path, exist_ok=True)
-
-    print(os.getcwd())
-
-    try:
-        base_path = os.path.dirname(__file__)
-        print(base_path)
-        base_path_2 = os.path.abspath(os.path.join(base_path, os.pardir, os.pardir))
-        print(os.path.join(base_path_2, 'resources', 'Rose.png'))
-        photo = PhotoImage(file=os.path.join(base_path_2, 'resources', 'Rose.png'))
-        print(str(photo))
-    except Exception as e:
-        print(str(e))
-
-    time.sleep(10)
-    try:
-        os.chdir("src/resources")
-    except FileNotFoundError:
-        fatal("No Resources Folder... Exiting...")
 
     load_tkinter_buttons()
     load_data_file()
@@ -61,24 +43,29 @@ def __main__():
 def load_tkinter_buttons():
     global icon_settings, icon_back, icon_settingsBG, playlist_forwards, playlist_backwards
 
-    icon_settings = PhotoImage(file="settings_.png")
-    icon_back = PhotoImage(file="back.png")
-    icon_settingsBG = PhotoImage(file="SettingsBG.png")
+    main_path: str = get_resources_path()
 
-    playlist_forwards = PhotoImage(file="forward.png")
-    playlist_backwards = PhotoImage(file="backwards.png")
+    icon_settings = PhotoImage(file=os.path.join(main_path, "settings_.png"))
+    icon_back = PhotoImage(file=os.path.join(main_path, "back.png"))
+    icon_settingsBG = PhotoImage(file=os.path.join(main_path, "SettingsBG.png"))
+
+    playlist_forwards = PhotoImage(file=os.path.join(main_path, "forward.png"))
+    playlist_backwards = PhotoImage(file=os.path.join(main_path, "backwards.png"))
+
+
+def get_resources_path():
+    return os.path.join(os.getcwd(), '_internal', 'resources')
 
 
 def load_data_file():
     global command_line, switch_advanced_using_var, switch_playlist_same_quality_var, bgImage
 
     try:
-        with open(data_file_path + "data.txt") as file:
+        with open(os.path.join(data_file_path, "data.txt")) as file:
             user_data = str(file.read()).split(";")
             # check data
             if user_data[0] not in language_dict.keys():
                 repair_data()
-            _ = PhotoImage(file=str(user_data[1]) + ".png")
             if user_data[2] not in ["True", "False"]:
                 repair_data()
             if user_data[3] not in ["True", "False"]:
@@ -86,7 +73,7 @@ def load_data_file():
     except Exception:
         repair_data()
     finally:
-        with open(data_file_path + "data.txt") as file:
+        with open(os.path.join(data_file_path, "data.txt")) as file:
             user_data = str(file.read()).split(";")
             # read data
             info("Loaded user data: " + '; '.join(user_data))
@@ -103,11 +90,11 @@ def load_data_file():
 
 def repair_data():
     error("Invalid data detected! Reseting data...")
-    with open(data_file_path + "data.txt", "w") as file:
+    with open(os.path.join(data_file_path, "data.txt"), "w") as file:
         file.write("English;Bubbles;False;True")  # standards
 
 
 def save_data():
     global switch_advanced_using_var
-    with open(data_file_path + "data.txt", "w") as file:  # language, background, advanced using
+    with open(os.path.join(data_file_path, "data.txt"), "w") as file:  # language, background, advanced using
         file.write(str(set_language.get()) + ";" + str(set_bg.get()) + ";" + str(switch_advanced_using_var) + ";" + str(switch_playlist_same_quality_var))

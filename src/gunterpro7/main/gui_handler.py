@@ -419,7 +419,7 @@ def setPlaylistFormat():
 
 def set_bg_and_image(image__):
     global image_
-    image_ = PhotoImage(file=str(image__) + ".png")
+    image_ = PhotoImage(file=os.path.join(config.get_resources_path(), str(image__)) + ".png")
 
     c1.create_image(0, 0, image=image_)
 

@@ -1,3 +1,5 @@
+import os
+
 from src.gunterpro7.logger import logger
 from src.gunterpro7.logger.logger import *
 from src.gunterpro7.main import config, gui_handler
@@ -21,9 +23,7 @@ def __main__():
         /_.___/\\__, /   \\____/\\__,_/_/ /_/\\__/\\___/_/  /_/   /_/   \\____/_/   
               /____/                                                          
         """)
-
-    # Check if all Modules are installed
-
+    log("Working dir: " + str(os.getcwd()))
 
     # Setup
     gui_handler.__main__()
