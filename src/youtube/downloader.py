@@ -1,7 +1,7 @@
 from tkinter import StringVar
 
 import youtube_dl
-from pytube import YouTube
+from pytubefix import YouTube
 
 from src.utils import audio_merger
 from src.logger.logger import *
@@ -118,6 +118,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
 
                     audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, fps=int(format_2[format_2.find("p") + 1:]))
 
+                    log("Removing old audio and old movie file")
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp4"')
 
@@ -129,6 +130,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                         ydl.download([_link])
                     audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, int(format_2[format_2.find("p") + 1:]))
 
+                    log("Removing old audio and old movie file")
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp4"')
                 except Exception as err2:
