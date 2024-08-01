@@ -1,13 +1,11 @@
-import os
-import time
 from tkinter import StringVar
 
 import youtube_dl
-from pytube import YouTube, Playlist
+from pytube import YouTube
 
-from src.audiolib import audio_merger
+from src.utils import audio_merger
 from src.logger.logger import *
-from src.main import gui_handler, config, language
+from src.main import gui_handler, language
 from src.utils.utils import checkForNumber
 
 
@@ -118,7 +116,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                         filename=setname(name, _mp3_mp4) + "_temp.mp4")
                     # log(option_lst.get()[option_lst.get().find("p")+1:])
 
-                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", int(format_2[format_2.find("p") + 1:]))
+                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, fps=int(format_2[format_2.find("p") + 1:]))
 
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp4"')
@@ -129,7 +127,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                     ydl_opts = {'format': "mp4[height=" + format_[:-1] + "]", 'outtmpl': setname(name, _mp3_mp4) + "_temp.mp4"}
                     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
                         ydl.download([_link])
-                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", int(format_2[format_2.find("p") + 1:]))
+                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, int(format_2[format_2.find("p") + 1:]))
 
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp4"')
