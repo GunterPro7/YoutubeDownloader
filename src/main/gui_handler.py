@@ -60,16 +60,6 @@ mp3_mp4_var__ = "mp3"
 
 
 def __main__():
-    __setup__()
-
-    try:
-        os.chdir("data")
-    except FileNotFoundError:
-        os.mkdir("data")
-        os.chdir("data")
-
-
-def __before_main__():
     global root
     root = tk.Tk()
 
