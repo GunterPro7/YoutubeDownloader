@@ -1,5 +1,6 @@
 import time
 import tkinter as tk
+import traceback
 from tkinter import ttk
 from tkinter import *
 
@@ -186,13 +187,18 @@ def init_canvas_content():
 
 def download_yt_video(*args):
     root.title(language.get_idx(11))
-    if args != ():
-        result = downloader.download_yt_video_mp4(*args, name=name)
-    else:
-        result = downloader.download_yt_video_mp4(link.get(), mp3_mp4.get(), fast_fancy.get(),
-                                                  option_lst.get()[:option_lst.get().find("p") + 1], option_lst.get(),
-                                                  name)
+    try:
+        if args != ():
+            result = downloader.download_yt_video_mp4(*args, name=name)
+        else:
+            result = downloader.download_yt_video_mp4(link.get(), mp3_mp4.get(), fast_fancy.get(),
+                                                      option_lst.get()[:option_lst.get().find("p") + 1],
+                                                      option_lst.get(), name)
+    except Exception as e:
+        error("An error occurred while Downloading the Video / Audio:\n" + traceback.format_exc())
+        result = language.get_idx(18)
     hidden_text.config(text=result)
+    root.title(language.get_idx(0))
 
 
 def get_resolutions(link: str):
@@ -216,6 +222,7 @@ def display_options(*event):
                     range(len(playlist_lst))]
             except KeyError:
                 hidden_text.config(text=language.get_idx(9))
+                warn("Url not found for type playlist, link: " + link.get())
                 return
             counter_playlist = 0
             playlist_last = link.get()
@@ -225,7 +232,7 @@ def display_options(*event):
     valid = downloader.valid_link(link.get())  # check the validity of link
     if not valid:
         hidden_text.config(text=language.get_idx(9))
-        error("Loading Video/Audio Failed! Error: URL-Not Found 404")
+        error("Loading Video/Audio Failed! Error: URL-Not Found 404; link: " + link.get())
         return
 
     hidden_text.config(text=language.get_idx(20))

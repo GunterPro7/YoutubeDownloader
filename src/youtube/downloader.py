@@ -6,6 +6,7 @@ import youtube_dl
 from pytube import YouTube, Playlist
 
 from src.audiolib import audio_merger
+from src.logger.logger import *
 from src.main import gui_handler, config, language
 from src.utils.utils import checkForNumber
 
@@ -55,8 +56,8 @@ def get_resolutions(link: str):
                     else:
                         final_return_lst.append("720p" + quality + "-fast")
                 except Exception as err:
-                    print("An Error occured - Some details (skipping video and continue downloading): ", err, "\n\n",
-                          "E:", e, " FinalReturnList:", final_return_lst, "_last", last_)
+                    error("An Error occured - Some details (skipping video and continue downloading): ", str(err), "\n\n",
+                          "E:", e, " FinalReturnList:", str(final_return_lst), "_last", last_)
             else:
                 final_return_lst.append(e)
         last_ = e
@@ -65,31 +66,31 @@ def get_resolutions(link: str):
 
 
 def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name: StringVar) -> str:
-    print(format_, format_2)
-    print("Downloading...")
+    log("Formats: " + format_, format_2)
+    log("Downloading (link: " + _link + ") ...")
 
     if "list" in _link:
         _link = _link.split("&list")[0]
-    print("Downloading audio... " + _link)
+    log("Downloading audio... " + _link)
     if _mp3_mp4 == "mp4":
         try:
             yt = YouTube(_link)
         except Exception as err:
             gui_handler.hidden_text.config(text=language.get_idx(9))
             gui_handler.root.title(language.get_idx(0))
-            print("Download Failed! Err:", str(err))
+            error("Download Failed! Err:", str(err))
             return language.get_idx(9)
         if setname(name, _mp3_mp4) == None:
-            print("Download Failed! Err: No filename set!")
+            error("Download Failed! Err: No filename set!")
             return language.get_idx(14)
         else:
             if (setname(name, _mp3_mp4) + ".mp4") in os.listdir():
-                print("Download Failed! Err: File already exists!")
+                error("Download Failed! Err: File already exists!")
                 return language.get_idx(15)
             try:
-                print("DOWNLOADING with format: " + format_)
+                log("DOWNLOADING with format: " + format_)
                 if format_2 == "resolution":
-                    print("Download Failed! Err: No pixel Quality set!")
+                    error("Download Failed! Err: No pixel Quality set!")
                     return language.get_idx(16)
                 if format_.startswith("360p") or format_.startswith("720p"):
                     yt.streams.filter(file_extension="mp4", res=format_).first().download(filename=setname(name, _mp3_mp4) + ".mp4")
@@ -107,7 +108,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                                 with youtube_dl.YoutubeDL(ydl_opts2) as ydl2:
                                     ydl2.download([_link])
                             except Exception:
-                                print("An Error occurred! (403 Forbidden) Retrying:", _)
+                                error("An Error occurred! (403 Forbidden) Retrying:", str(_))
                                 continue
                             else:
                                 os.rename(setname(name, _mp3_mp4) + ".m4a", setname(name, _mp3_mp4) + "_temp.mp3")
@@ -115,7 +116,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
 
                     yt.streams.filter(file_extension="mp4", res=format_).first().download(
                         filename=setname(name, _mp3_mp4) + "_temp.mp4")
-                    # print(option_lst.get()[option_lst.get().find("p")+1:])
+                    # log(option_lst.get()[option_lst.get().find("p")+1:])
 
                     audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", int(format_2[format_2.find("p") + 1:]))
 
@@ -123,7 +124,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp4"')
 
             except AttributeError as err:
-                print("Failed to download with 'pytube', trying with 'youtube-dl' now!")
+                warn("Failed to download with 'pytube', trying with 'youtube-dl' now!")
                 try:
                     ydl_opts = {'format': "mp4[height=" + format_[:-1] + "]", 'outtmpl': setname(name, _mp3_mp4) + "_temp.mp4"}
                     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -136,22 +137,22 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                     try:
                         os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
                     except Exception as err:
-                        print("Error occurred twice :) -> ", err)
-                    print("Download Failed! Err:", str(err) + ",", str(err2))
-                    print("If in Playlist download Queue, Retrying...")
+                        error("Error occurred twice :) -> ", str(err))
+                    error("Download Failed! Err:", str(err) + ",", str(err2))
+                    info("If in Playlist download Queue, Retrying...")
                     return language.get_idx(17)
     else:
         try:
             yt = YouTube(_link)
         except Exception as err:
-            print("Download Failed! Err:", str(err))
+            error("Download Failed! Err:", str(err))
             return language.get_idx(9)
         if setname(name, _mp3_mp4) == None:
-            print("Download Failed! Err: No filename set!")
+            error("Download Failed! Err: No filename set!")
             return language.get_idx(14)
         else:
             if (setname(name, _mp3_mp4) + ".mp3") in os.listdir():
-                print("Download Failed! Err: File already exists!")
+                error("Download Failed! Err: File already exists!")
                 return language.get_idx(15)
             if _fast_fancy == language.get_idx(24):
                 yt.streams.filter(only_audio=True).first().download(filename=setname(name, _mp3_mp4) + ".mp3")
@@ -162,7 +163,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                         with youtube_dl.YoutubeDL(ydl_opts2) as ydl2:
                             ydl2.download([_link])
                     except Exception:
-                        print("An Error occurred! (403 Forbidden) Retrying:", _)
+                        error("An Error occurred! (403 Forbidden) Retrying:", str(_))
                         continue
                     else:
                         final_name = ""
@@ -171,7 +172,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                                 final_name += a
                         os.rename(setname(name, _mp3_mp4) + ".m4a", final_name + ".mp3")
                         break
-        print("Download Complete")
+        success("Download Complete: " + _link)
     return language.get_idx(19)
 
 
