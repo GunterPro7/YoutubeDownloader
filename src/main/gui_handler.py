@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 
-from src.main import config, language
+from src.main import config, language, downloader
 
 try:
     import win32con, win32gui
@@ -23,7 +23,9 @@ download_button: tk.Button
 advanced_using_button: tk.Button
 playlist_same_quality: tk.Button
 options: ttk.Combobox
+link: StringVar
 link_entry: tk.Entry
+name: StringVar
 name_entry: tk.Entry
 mp3_mp4: StringVar
 dropdown_mp_: OptionMenu
@@ -40,6 +42,9 @@ playlist_dropdown: StringVar
 video_playlist_dropdown: OptionMenu
 playlist_forward_button: tk.Button
 playlist_backwards_button: tk.Button
+
+def get_playlist_backwards_button():
+    print(playlist_backwards_button)
 
 # Global Variables
 settings_ = True
@@ -82,6 +87,8 @@ def __setup__():
     if config.switch_playlist_same_quality_var:
         playlist_same_quality.config(text="✓")
 
+
+def __run__():
     root.mainloop()
 
 
@@ -103,9 +110,8 @@ def init_canvas():
     c3.create_text(130, 260, text=language.get_idx(23), font=('Comic Sans MS', 12, 'normal'), fill="white")
 
 def init_canvas_content():
-    global download_button, advanced_using_button, playlist_same_quality
-    global options, link_entry, name_entry, mp3_mp4, dropdown_mp_, hidden_text, text_fps, fast_fancy, audio_dropdown, \
-        option_lst, text_title, settings_button, settings_language, bg_dropdown, playlist_dropdown, \
+    global download_button, advanced_using_button, playlist_same_quality, options, link, link_entry, name, name_entry, mp3_mp4, dropdown_mp_, hidden_text, text_fps, fast_fancy, \
+        audio_dropdown, option_lst, text_title, settings_button, settings_language, bg_dropdown, playlist_dropdown, \
         video_playlist_dropdown, playlist_forward_button, playlist_backwards_button
 
     link = StringVar()
@@ -123,7 +129,7 @@ def init_canvas_content():
     dropdown_mp_.place(x=125, y=100)
 
     download_button = tk.Button(root, text=language.get_idx(26), height=3, width=11, border=5,
-                                command=prepare_download)
+                                command=downloader.prepare_download)
     download_button.place(x=400, y=212)
 
     hidden_text = tk.Label(root, text=language.get_idx(20), fg="black", font=('Comic Sans MS', 10, 'normal'),
@@ -138,7 +144,7 @@ def init_canvas_content():
     audio_dropdown.place(x=280, y=100)
 
     option_lst = StringVar()
-    link.trace('w', display_options)
+    link.trace('w', downloader.display_options)
     option_lst.set(language.get_idx(21))
     options = ttk.Combobox(root, textvariable=option_lst, state="readonly", width=14)
 
@@ -159,24 +165,17 @@ def init_canvas_content():
     video_playlist_dropdown = OptionMenu(root, playlist_dropdown, "Video", "Playlist", command=change_playlist_vid)
     video_playlist_dropdown.place(x=430, y=100)
 
-    playlist_forward_button = tk.Button(root, text='', height=35, width=32, border=5, command=forwards_playlist,
+    playlist_forward_button = tk.Button(root, text='', height=35, width=32, border=5, command=downloader.forwards_playlist,
                                         image=config.playlist_forwards)
-    playlist_backwards_button = tk.Button(root, text='', height=35, width=32, border=5, command=backwards_playlist,
+    playlist_backwards_button = tk.Button(root, text='', height=35, width=32, border=5, command=downloader.backwards_playlist,
                                           image=config.playlist_backwards)
 
     advanced_using_button = tk.Button(root, text='', height=1, width=2, border=5, command=switch_advanced_using)
     playlist_same_quality = tk.Button(root, text='', height=1, width=2, border=5, command=switch_playlist_same_quality)
 
-def prepare_download():
-    pass
-def change_playlist_vid():
-    pass
-def forwards_playlist():
-    pass
-def backwards_playlist():
-    pass
-def display_options():
-    pass
+def change_playlist_vid(var):
+    downloader.change_playlist_vid(var)
+
 
 def set_bg_and_image(image__):
     global image_
@@ -295,3 +294,8 @@ def func_mp3_mp4(var):
         c1.place(x=0, y=0)
         c2.place_forget()
         mp3_mp4_var__ = "mp3"
+
+
+def set_pixel_back():
+    options.set(language.get_idx(21))
+    download_button.place(x=400, y=212)

@@ -31,7 +31,7 @@ language_dict: Dict[str, List[str]] = {"English": ["Youtube to mp3/mp4 converter
 last_language: str = "English"
 
 
-def set_language(language: str) -> List[str]:
+def set_language(language: str):
     global last_language, language_dict
 
     if language in language_dict.keys():
