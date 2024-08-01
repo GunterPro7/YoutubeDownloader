@@ -5,10 +5,11 @@ from src.main import config
 
 
 def __main__():
-    # Setup
+    # Init Logger
     logger.__init__()
     log("Starting YoutubeToMp3...")
 
+    # Setup
     gui_handler.__main__()
     config.__main__()
     gui_handler.__setup__()
