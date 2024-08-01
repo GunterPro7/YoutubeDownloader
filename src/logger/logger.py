@@ -13,6 +13,7 @@ def __init__():
     _out_folder: str = os.getcwd() + "\\log\\"
     _out_file = _out_folder + "log" + datetime.now().strftime('%Y-%m-%d_%H-%M-%S') + ".txt"
     os.makedirs(_out_folder, exist_ok=True)
+    info("Initializing logger")
 
 
 def success(message: str) -> None:
