@@ -3,10 +3,10 @@ from tkinter import StringVar
 import youtube_dl
 from pytubefix import YouTube
 
-from src.utils import audio_merger
-from src.logger.logger import *
-from src.main import gui_handler, language
-from src.utils.utils import checkForNumber
+from src.gunterpro7.utils import audio_merger
+from src.gunterpro7.logger.logger import *
+from src.gunterpro7.main import language, gui_handler
+from src.gunterpro7.utils.utils import checkForNumber
 
 
 # function to check validity of the link

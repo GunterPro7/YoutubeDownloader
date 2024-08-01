@@ -1,5 +1,5 @@
 from tkinter import StringVar
-from src.logger.logger import *
+from src.gunterpro7.logger.logger import *
 
 import moviepy.editor as mpe
 

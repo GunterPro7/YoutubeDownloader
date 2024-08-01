@@ -1,11 +1,10 @@
 import ctypes
 import subprocess
-import sys
 import threading
 from typing import Dict, List
 
-from src.logger.logger import *
-from src.main import language
+from src.gunterpro7.logger.logger import *
+from src.gunterpro7.main import language
 
 modules_to_check = {
     "pytube": True,

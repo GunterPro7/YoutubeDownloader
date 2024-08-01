@@ -1,6 +1,6 @@
-from src.logger import logger
-from src.logger.logger import *
-from src.main import config, gui_handler, module_handler
+from src.gunterpro7.logger import logger
+from src.gunterpro7.logger.logger import *
+from src.gunterpro7.main import config, gui_handler
 
 
 def __main__():
@@ -23,7 +23,7 @@ def __main__():
         """)
 
     # Check if all Modules are installed
-    module_handler.__main__()
+
 
     # Setup
     gui_handler.__main__()

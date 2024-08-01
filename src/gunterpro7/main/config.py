@@ -1,10 +1,10 @@
-import os
+import time, sys
 from tkinter import *
 
-from src.logger.logger import *
-from src.main import language
-from src.main.language import language_dict
-from src.utils import utils
+from src.gunterpro7.logger.logger import *
+from src.gunterpro7.main import language
+from src.gunterpro7.main.language import language_dict
+from src.gunterpro7.utils import utils
 
 # Tkinter Buttons (Images)
 icon_settings: PhotoImage
@@ -24,17 +24,35 @@ bgImage: str  # File path
 set_bg: StringVar
 set_language: StringVar
 
+# Global Vars
+data_file_path: str
+
 
 def __main__():
-    global set_bg, set_language
+    global set_bg, set_language, data_file_path
     set_bg = StringVar()
     set_language = StringVar()
 
+    data_file_path = os.getenv('LOCALAPPDATA') + "\\GunterPro7\\youtubeToMp3\\"
+    os.makedirs(data_file_path, exist_ok=True)
+
+    print(os.getcwd())
+
     try:
-        os.chdir("data")
+        base_path = os.path.dirname(__file__)
+        print(base_path)
+        base_path_2 = os.path.abspath(os.path.join(base_path, os.pardir, os.pardir))
+        print(os.path.join(base_path_2, 'resources', 'Rose.png'))
+        photo = PhotoImage(file=os.path.join(base_path_2, 'resources', 'Rose.png'))
+        print(str(photo))
+    except Exception as e:
+        print(str(e))
+
+    time.sleep(10)
+    try:
+        os.chdir("src/resources")
     except FileNotFoundError:
-        os.mkdir("data")
-        os.chdir("data")
+        fatal("No Resources Folder... Exiting...")
 
     load_tkinter_buttons()
     load_data_file()
@@ -55,7 +73,7 @@ def load_data_file():
     global command_line, switch_advanced_using_var, switch_playlist_same_quality_var, bgImage
 
     try:
-        with open("data.txt") as file:
+        with open(data_file_path + "data.txt") as file:
             user_data = str(file.read()).split(";")
             # check data
             if user_data[0] not in language_dict.keys():
@@ -68,7 +86,7 @@ def load_data_file():
     except Exception:
         repair_data()
     finally:
-        with open("data.txt") as file:
+        with open(data_file_path + "data.txt") as file:
             user_data = str(file.read()).split(";")
             # read data
             info("Loaded user data: " + '; '.join(user_data))
@@ -85,17 +103,11 @@ def load_data_file():
 
 def repair_data():
     error("Invalid data detected! Reseting data...")
-    with open("data.txt", "w") as file:
+    with open(data_file_path + "data.txt", "w") as file:
         file.write("English;Bubbles;False;True")  # standards
 
 
 def save_data():
     global switch_advanced_using_var
-    os.chdir("..")
-    try:
-        os.chdir("data")
-    except FileNotFoundError:
-        os.makedirs("data")
-        os.chdir("data")
-    with open("data.txt", "w") as file:  # language, background, advanced using
+    with open(data_file_path + "data.txt", "w") as file:  # language, background, advanced using
         file.write(str(set_language.get()) + ";" + str(set_bg.get()) + ";" + str(switch_advanced_using_var) + ";" + str(switch_playlist_same_quality_var))

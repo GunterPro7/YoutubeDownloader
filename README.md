@@ -6,6 +6,7 @@ Download YouTube Videos and Playlists to mp3 and mp4 with this YouTube-Downloade
 ### Following libraries need to be installed in case to run this Program:
 - Tkinter "tk"
 - pytube
+- pytubefix (optional 01.08.2024)
 - youtube_dl
 - PIL "pillow"
 - pywin32 (optional)

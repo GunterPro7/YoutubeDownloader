@@ -1,0 +1,2 @@
+python -m PyInstaller --onefile --console src/main/main.py
+python -m PyInstaller main.spec

@@ -1,8 +1,10 @@
 import os
+import sys
+import time
 from datetime import datetime
 from enum import Enum
 
-from src.utils import file_utils
+from src.gunterpro7.utils import file_utils
 
 _default_color: str = '\033[38m'
 _out_file: str = ""
@@ -38,7 +40,8 @@ def error(*message: str) -> None:
 
 def fatal(*message: str) -> None:
     _print(' '.join(message), 31, _Type.fatal)
-    exit()
+    time.sleep(2.5)
+    sys.exit(0)
 
 
 class _Type(Enum):

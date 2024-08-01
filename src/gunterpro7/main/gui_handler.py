@@ -6,9 +6,9 @@ from tkinter import *
 
 from pytube import Playlist
 
-from src.logger.logger import *
-from src.main import config, language
-from src.youtube import downloader
+from src.gunterpro7.logger.logger import *
+from src.gunterpro7.main import language, config
+from src.gunterpro7.youtube import downloader
 
 try:
     import win32con, win32gui
