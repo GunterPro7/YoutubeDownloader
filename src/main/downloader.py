@@ -9,11 +9,6 @@ from src.main import gui_handler, config, language
 from src.utils.file_utils import setname
 from src.utils.utils import checkForNumber
 
-# Values (set later)
-counter_playlist = 0
-playlist_last = ""
-orig_name = "None"
-
 
 # function to check validity of the link
 def valid_link(link: str) -> bool:
@@ -69,18 +64,7 @@ def get_resolutions(link: str):
     return final_return_lst, yt.title
 
 
-def download_yt_video_mp4(*args, option_lst=None) -> str:
-    if args == ():
-        global link, mp3_mp4, fast_fancy
-        format_ = option_lst.get()[:option_lst.get().find("p") + 1]
-        format_2 = option_lst.get()
-        _link, _mp3_mp4, _fast_fancy = link.get(), mp3_mp4.get(), fast_fancy.get()
-    else:
-        _link = args[0]
-        _mp3_mp4 = args[1]
-        _fast_fancy = args[2]
-        format_ = args[3]
-        format_2 = args[4]
+def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2) -> str:
     print(format_, format_2)
 
     gui_handler.root.title(language.get_idx(11))
@@ -106,7 +90,7 @@ def download_yt_video_mp4(*args, option_lst=None) -> str:
                 return language.get_idx(15)
             try:
                 print("DOWNLOADING with format: " + format_)
-                if option_lst.get() == "resolution":
+                if format_2 == "resolution":
                     print("Download Failed! Err: No pixel Quality set!")
                     return language.get_idx(16)
                 if format_.startswith("360p") or format_.startswith("720p"):

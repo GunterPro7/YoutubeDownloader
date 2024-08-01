@@ -46,6 +46,11 @@ video_playlist_dropdown: OptionMenu
 playlist_forward_button: tk.Button
 playlist_backwards_button: tk.Button
 
+# Values (set later)
+counter_playlist = 0
+playlist_last = ""
+orig_name = "None"
+
 def get_playlist_backwards_button():
     print(playlist_backwards_button)
 
@@ -179,7 +184,11 @@ def init_canvas_content():
 
 def download_yt_video(*args):
     root.title(language.get_idx(11))
-    result = downloader.download_yt_video_mp4(args, option_lst=option_lst)
+    if args != ():
+        result = downloader.download_yt_video_mp4(*args)
+    else:
+        result = downloader.download_yt_video_mp4(link.get(), mp3_mp4.get(), fast_fancy.get(),
+                                                  option_lst.get()[:option_lst.get().find("p") + 1], option_lst.get())
     hidden_text.config(text=result)
 
 
