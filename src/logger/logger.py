@@ -36,12 +36,18 @@ def error(*message: str) -> None:
     _print(' '.join(message), 31, _Type.error)
 
 
+def fatal(*message: str) -> None:
+    _print(' '.join(message), 31, _Type.fatal)
+    exit()
+
+
 class _Type(Enum):
     success = 'success'
     log = 'log'
     info = 'info'
     warn = 'warn'
     error = 'error'
+    fatal = 'fatal'
 
 
 def _print(message: str, color: int, type: _Type) -> None:
