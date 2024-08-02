@@ -234,7 +234,7 @@ def display_options(*event):
         url = playlist_lst[counter_playlist]
     else:
         url = link.get()
-        option_lst.set(language.get_idx(21))
+        set_pixel_back()
 
     ydl_opts = {}
     resolutions = []

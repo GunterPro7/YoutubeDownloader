@@ -56,6 +56,9 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
     log("Formats: " + format_, format_2)
     log("Downloading (link: " + _link + ") ...")
 
+    if audio_quality.get() == language.get_idx(34):
+        error("Pixel Quality Invalid or not set! Value: " + audio_quality.get())
+        return language.get_idx(35)
     if "list" in _link:
         _link = _link.split("&list")[0]
     log("Downloading audio... " + _link)
@@ -76,7 +79,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                 return language.get_idx(15)
             try:
                 log("DOWNLOADING with format: " + format_)
-                if format_2 == "resolution":
+                if format_2 == language.get_idx(21):
                     error("Download Failed! Err: No pixel Quality set!")
                     return language.get_idx(16)
                 else:
