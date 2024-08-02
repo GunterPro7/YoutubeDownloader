@@ -1,7 +1,5 @@
-import time
 import tkinter as tk
 import traceback
-from tkinter import ttk
 from tkinter import *
 
 from pytube import Playlist
@@ -28,7 +26,7 @@ c3: tk.Canvas
 download_button: tk.Button
 advanced_using_button: tk.Button
 playlist_same_quality: tk.Button
-options: ttk.Combobox
+options: OptionMenu
 link: StringVar
 link_entry: tk.Entry
 name: StringVar
@@ -40,6 +38,7 @@ text_fps: tk.Label
 fast_fancy: StringVar
 audio_dropdown: OptionMenu
 option_lst: StringVar
+audio_options: StringVar
 text_title: tk.Label
 settings_button: tk.Button
 settings_language: OptionMenu
@@ -110,9 +109,10 @@ def init_canvas():
     c3.create_text(95, 131, text=language.get_idx(30), font=('Comic Sans MS', 12, 'normal'), fill="white")
     c3.create_text(130, 260, text=language.get_idx(23), font=('Comic Sans MS', 12, 'normal'), fill="white")
 
+
 def init_canvas_content():
     global download_button, advanced_using_button, playlist_same_quality, options, link, link_entry, name, name_entry, mp3_mp4, dropdown_mp_, hidden_text, text_fps, fast_fancy, \
-        audio_dropdown, option_lst, text_title, settings_button, settings_language, bg_dropdown, playlist_dropdown, \
+        audio_dropdown, option_lst, audio_options, text_title, settings_button, settings_language, bg_dropdown, playlist_dropdown, \
         video_playlist_dropdown, playlist_forward_button, playlist_backwards_button
 
     link = StringVar()
@@ -141,13 +141,16 @@ def init_canvas_content():
 
     fast_fancy = StringVar()
     fast_fancy.set(language.get_idx(24))
-    audio_dropdown = OptionMenu(root, fast_fancy, language.get_idx(24), language.get_idx(25))
-    audio_dropdown.place(x=280, y=100)
 
     option_lst = StringVar()
     link.trace('w', display_options)
     option_lst.set(language.get_idx(21))
-    options = ttk.Combobox(root, textvariable=option_lst, state="readonly", width=14)
+    options = OptionMenu(root, option_lst, language.get_idx(21))
+
+    audio_options = StringVar()
+    audio_options.set(language.get_idx(34))
+    audio_dropdown = OptionMenu(root, audio_options, language.get_idx(34))
+    audio_dropdown.place(x=280, y=100)
 
     text_title = tk.Label(root, text=language.get_idx(10), fg="black", font=('Comic Sans MS', 8, 'normal'),
                           highlightthickness=3)
@@ -187,6 +190,7 @@ def download_yt_video(*args):
     except Exception as e:
         error("An error occurred while Downloading the Video / Audio:\n" + traceback.format_exc())
         result = language.get_idx(18)
+    set_pixel_back(only_button=result != language.get_idx(19))
     hidden_text.config(text=result)
     root.title(language.get_idx(0))
 
@@ -197,7 +201,7 @@ def get_resolutions(link: str):
 
 
 def display_options(*event):
-    global lst_formats, resolutions, playlist_dropdown, counter_playlist, playlist_lst, playlist_formats, playlist_dropdown, playlist_last
+    global lst_formats, resolutions, playlist_dropdown, counter_playlist, playlist_lst, playlist_formats, playlist_dropdown, playlist_last, audio_options
     if link.get() == "":
         hidden_text.config(text=language.get_idx(20))
         text_title.config(text=language.get_idx(10))
@@ -230,7 +234,7 @@ def display_options(*event):
         url = playlist_lst[counter_playlist]
     else:
         url = link.get()
-        options.set(language.get_idx(21))
+        option_lst.set(language.get_idx(21))
 
     ydl_opts = {}
     resolutions = []
@@ -248,7 +252,15 @@ def display_options(*event):
         text_title.config(
             text=f'{language.get_idx(10)} {video_data[1][:33]} - {counter_playlist + 1} / {len(playlist_lst)}')
 
-    options['values'] = video_data[0]  # sets combobox values to available resolutions
+    update_option_menu(options, video_data[0], option_lst)  # sets combobox values to available resolutions
+    update_option_menu(audio_dropdown, video_data[2], audio_options)  # sets combobox values of all available audio kbps.
+
+
+def update_option_menu(option_menu: OptionMenu, options: list, optionVar: StringVar):
+    menu = option_menu["menu"]
+    menu.delete(0, "end")
+    for option in options:
+        menu.add_command(label=option, command=lambda value=option: optionVar.set(value))
 
 
 def prepare_download():
@@ -265,7 +277,7 @@ def prepare_download():
         root.after(15, download_yt_video)
         hidden_text.config(text=language.get_idx(27) + " " * 45)
         download_button.place_forget()
-        root.after(100, set_pixel_back)
+        # root.after(100, set_pixel_back)
     else:
         if name.get() == "":
             hidden_text.config(text=language.get_idx(14))
@@ -397,7 +409,7 @@ def change_playlist_vid(var):
 def setIngameFormat():
     global playlist_formats
     if playlist_formats[counter_playlist]["Format"] == "mp4":
-        options.place(x=160, y=155)
+        options.place(x=160, y=150)
 
         c2.place(x=0, y=0)
         c1.place_forget()
@@ -480,7 +492,7 @@ def func_to_settings():
 def func_back():
     global mp3_mp4_var__
     if mp3_mp4_var__ == "mp4":
-        options.place(x=160, y=155)
+        options.place(x=160, y=150)
         c2.place(x=0, y=0)
     else:
         c1.place(x=0, y=0)
@@ -532,7 +544,7 @@ def switch_playlist_same_quality():
 def func_mp3_mp4(var):
     global mp3_mp4_var__
     if var == "mp4":
-        options.place(x=160, y=155)
+        options.place(x=160, y=150)
 
         c2.place(x=0, y=0)
         c1.place_forget()
@@ -545,6 +557,8 @@ def func_mp3_mp4(var):
         mp3_mp4_var__ = "mp3"
 
 
-def set_pixel_back():
-    options.set(language.get_idx(21))
+def set_pixel_back(only_button=False):
+    if not only_button:
+        option_lst.set(language.get_idx(21))
+        audio_options.set(language.get_idx(34))
     download_button.place(x=400, y=212)

@@ -20,7 +20,7 @@ def valid_link(link: str) -> bool:
 
 def get_resolutions(link: str):
     yt = YouTube(link)
-    lst, return_lst, final_return_lst = [], [], []
+    lst, return_lst, final_return_lst, audio_list = [], [], [], []
 
     resolution = yt.streams.filter(adaptive=True)
     for a in resolution:
@@ -36,6 +36,8 @@ def get_resolutions(link: str):
                     if c in "0123456789":
                         lst_elemts += c
                 break
+            if b.startswith("abr"):
+                audio_list.append(b.lstrip('abr="').rstrip('"'))
         lst.append(lst_elemts)
     for d in lst[::-1]:
         if d not in return_lst and d != "" and d[0] != "p" and str(d + "-fast") not in return_lst:
@@ -46,7 +48,8 @@ def get_resolutions(link: str):
             final_return_lst.append(e)
         last_ = e
 
-    return final_return_lst, yt.title
+    audio_list.sort(key=lambda x: int(x.replace('kbps', '')))
+    return final_return_lst, yt.title, audio_list
 
 
 def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name: StringVar) -> str:
