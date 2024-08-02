@@ -20,7 +20,7 @@ def valid_link(link: str) -> bool:
 
 def get_resolutions(link: str):
     yt = YouTube(link)
-    lst, return_lst, final_return_lst = [], [], ["144p-fast"]
+    lst, return_lst, final_return_lst = [], [], []
 
     resolution = yt.streams.filter(adaptive=True)
     for a in resolution:
@@ -39,10 +39,7 @@ def get_resolutions(link: str):
         lst.append(lst_elemts)
     for d in lst[::-1]:
         if d not in return_lst and d != "" and d[0] != "p" and str(d + "-fast") not in return_lst:
-            if d[:3] in ["360", "720"]:
-                return_lst.append(d + "-fast")
-            else:
-                return_lst.append(d)
+            return_lst.append(d)
     last_ = "p"
     for e in return_lst:
         if last_[:last_.find("p")] != e[:e.find("p")]:
@@ -79,12 +76,6 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                 if format_2 == "resolution":
                     error("Download Failed! Err: No pixel Quality set!")
                     return language.get_idx(16)
-                if format_.startswith("360p") or format_.startswith("720p"):
-                    yt.streams.filter(file_extension="mp4", res=format_).first().download(filename=setname(name, _mp3_mp4) + ".mp4")
-                    return language.get_idx(19)
-                elif format_2.startswith("144p-"):
-                    yt.streams.filter().first().download(filename=setname(name, _mp3_mp4) + ".mp4")
-                    return language.get_idx(19)
                 else:
                     if _fast_fancy == language.get_idx(24):
                         yt.streams.filter(only_audio=True).first().download(filename=setname(name, _mp3_mp4) + "_temp.mp3")
