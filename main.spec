@@ -9,6 +9,7 @@ image_files = glob.glob(os.path.join(resource_dir, '*.png'))
 
 # Prepare the datas argument for PyInstaller
 datas = [(file, 'resources') for file in image_files]
+datas.append('ffmpeg.exe')
 
 a = Analysis(
     ['src\\gunterpro7\\main\\main.py'],

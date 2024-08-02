@@ -26,15 +26,17 @@ set_language: StringVar
 
 # Global Vars
 data_file_path: str
+resources_main_path: str
 
 
 def __main__():
-    global set_bg, set_language, data_file_path
+    global set_bg, set_language, data_file_path, resources_main_path
     set_bg = StringVar()
     set_language = StringVar()
 
     data_file_path = os.path.join(os.getcwd(), "_internal")
     os.makedirs(data_file_path, exist_ok=True)
+    resources_main_path = os.getcwd()
 
     load_tkinter_buttons()
     load_data_file()
@@ -54,7 +56,7 @@ def load_tkinter_buttons():
 
 
 def get_resources_path():
-    return os.path.join(os.getcwd(), '_internal', 'resources')
+    return os.path.join(resources_main_path, '_internal', 'resources')
 
 
 def load_data_file():

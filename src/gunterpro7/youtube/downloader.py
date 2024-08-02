@@ -46,18 +46,7 @@ def get_resolutions(link: str):
     last_ = "p"
     for e in return_lst:
         if last_[:last_.find("p")] != e[:e.find("p")]:
-            if e.startswith("720p"):
-                try:
-                    quality = checkForNumber(e[-7:-5])
-                    if int(quality) > 30:
-                        final_return_lst.append("720p30-fast")
-                    else:
-                        final_return_lst.append("720p" + quality + "-fast")
-                except Exception as err:
-                    error("An Error occured - Some details (skipping video and continue downloading): ", str(err), "\n\n",
-                          "E:", e, " FinalReturnList:", str(final_return_lst), "_last", last_)
-            else:
-                final_return_lst.append(e)
+            final_return_lst.append(e)
         last_ = e
 
     return final_return_lst, yt.title
