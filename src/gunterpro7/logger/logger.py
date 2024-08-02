@@ -6,7 +6,7 @@ from enum import Enum
 
 from src.gunterpro7.utils import file_utils
 
-_default_color: str = '\033[38m'
+_default_color: str = '\033[37m'
 _out_file: str = ""
 
 _old_stdout: object
@@ -33,7 +33,7 @@ def success(*message: str, end="\n") -> None:
 
 
 def log(*message: str, end="\n") -> None:
-    _print(' '.join(message), 38, _Type.log, end)
+    _print(' '.join(message), 37, _Type.log, end)
 
 
 def info(*message: str, end="\n") -> None:
