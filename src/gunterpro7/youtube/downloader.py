@@ -1,6 +1,6 @@
 from tkinter import StringVar
 
-import youtube_dl
+import yt_dlp as youtube_dl
 from pytubefix import YouTube
 
 from src.gunterpro7.utils import audio_merger
