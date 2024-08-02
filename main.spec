@@ -2,7 +2,7 @@
 import glob
 import os
 from PyInstaller.utils.hooks import collect_data_files
-resource_dir = 'src/resources'
+resource_dir = '_internal/resources'
 
 # Use glob to find all PNG files in the resources directory
 image_files = glob.glob(os.path.join(resource_dir, '*.png'))

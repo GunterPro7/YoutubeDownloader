@@ -12,6 +12,7 @@ from src.gunterpro7.youtube import downloader
 
 try:
     import win32con, win32gui
+    win32installed = True
 except ImportError or ModuleNotFoundError as e:
     win32installed = False
 
@@ -56,6 +57,7 @@ orig_name = "None"
 # Global Variables
 settings_ = True
 mp3_mp4_var__ = "mp3"
+hide: object
 
 
 def __main__():
@@ -63,16 +65,18 @@ def __main__():
     root = tk.Tk()
 
 
-def __setup__():
-    global c1, c2, c3
+def __setup__(*args):
+    global c1, c2, c3, hide
 
     label = tk.Label(root, fg="green")
     root.geometry("530x300")
     root.resizable(False, False)
     root.title(language.get_idx(0))
 
-    if config.command_line == "False" and win32installed:
-        hide = win32gui.GetForegroundWindow()
+    if win32installed:
+        hide = win32gui.FindWindow(None, args[0])
+
+    if not config.command_line and win32installed:
         win32gui.ShowWindow(hide, win32con.SW_HIDE)
 
     init_canvas()
@@ -503,10 +507,15 @@ def func_back():
 
 
 def switch_advanced_using():
+    global hide
     if not config.switch_advanced_using_var:
         advanced_using_button.config(text="✓")
+        if win32installed:
+            win32gui.ShowWindow(hide, win32con.SW_SHOW)
     else:
         advanced_using_button.config(text="")
+        if win32installed:
+            win32gui.ShowWindow(hide, win32con.SW_HIDE)
 
     config.switch_advanced_using_var = not config.switch_advanced_using_var
 

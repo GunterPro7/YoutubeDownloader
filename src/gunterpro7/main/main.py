@@ -1,3 +1,4 @@
+import ctypes
 import os
 
 from src.gunterpro7.logger import logger
@@ -6,8 +7,12 @@ from src.gunterpro7.main import config, gui_handler
 
 
 def __main__():
+    title: str = "YoutubeToMp3 - by GunterPro7"
+    # Init
+    ctypes.windll.kernel32.SetConsoleTitleW(title)
+
     # Init Logger
-    logger.__init__()
+    logger.__init__()  # TODO make a venv to only bundle packages for this build
     log("Starting YoutubeToMp3...")
     success("""
         __  __            __        __       ______      __  ___     _____    
@@ -28,7 +33,7 @@ def __main__():
     # Setup
     gui_handler.__main__()
     config.__main__()
-    gui_handler.__setup__()
+    gui_handler.__setup__(title)
 
     # Run Gui
     gui_handler.__run__()
