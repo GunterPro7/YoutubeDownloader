@@ -3,7 +3,7 @@ from tkinter import StringVar
 import yt_dlp as youtube_dl
 from pytubefix import YouTube
 
-from src.gunterpro7.utils import audio_merger
+from src.gunterpro7.utils import audio_merger, utils
 from src.gunterpro7.logger.logger import *
 from src.gunterpro7.main import language, gui_handler
 from src.gunterpro7.utils.utils import checkForNumber
@@ -86,7 +86,7 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                         filename=setname(name, _mp3_mp4) + "_temp.mp4")
                     # log(option_lst.get()[option_lst.get().find("p")+1:])
 
-                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, fps=int(format_2[format_2.find("p") + 1:]))
+                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, fps=int(format_2[format_2.find("p") + 1:]), bitrate=utils.to_int(audio_quality.get()))
 
                     log("Removing old audio and old movie file")
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')

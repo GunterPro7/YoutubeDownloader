@@ -21,7 +21,7 @@ def combine_audio_deprecated(outname: str, name: StringVar, mp3_mp4: StringVar, 
     log("Combining Done!")
 
 
-def combine_audio(outname: str, name: StringVar, mp3_mp4: StringVar, fps=25):
+def combine_audio(outname: str, name: StringVar, mp3_mp4: StringVar, fps: int = 25, bitrate: int = 128):
     def log(message: str):
         print(message)  # Replace with a proper logging function if needed
 
@@ -38,6 +38,7 @@ def combine_audio(outname: str, name: StringVar, mp3_mp4: StringVar, fps=25):
         '-i', temp_audio,  # Input audio file
         '-c:v', 'copy',  # Copy the video codec (no re-encoding)
         '-c:a', 'aac',  # Use AAC for audio codec
+        '-b:a', str(bitrate) + "k",  # Set the audio bitrate
         '-strict', 'experimental',
         outname  # Output file
     ]
