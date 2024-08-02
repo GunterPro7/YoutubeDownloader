@@ -182,11 +182,11 @@ def download_yt_video(*args):
     root.title(language.get_idx(11))
     try:
         if args != ():
-            result = downloader.download_yt_video_mp4(*args, name=name)
+            result = downloader.download_yt_video_mp4(*args, name=name, audio_quality=audio_options)
         else:
             result = downloader.download_yt_video_mp4(link.get(), mp3_mp4.get(), fast_fancy.get(),
                                                       option_lst.get()[:option_lst.get().find("p") + 1],
-                                                      option_lst.get(), name)
+                                                      option_lst.get(), name, audio_options)
     except Exception as e:
         error("An error occurred while Downloading the Video / Audio:\n" + traceback.format_exc())
         result = language.get_idx(18)
