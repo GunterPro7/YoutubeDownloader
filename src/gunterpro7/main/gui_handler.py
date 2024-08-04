@@ -178,19 +178,20 @@ def init_canvas_content():
     playlist_same_quality = tk.Button(root, text='', height=1, width=2, border=5, command=switch_playlist_same_quality)
 
 
-def download_yt_video(*args):
+def download_yt_video(*args, not_reset_buttons=False):
     root.title(language.get_idx(11))
     try:
         if args != ():
-            result = downloader.download_yt_video_mp4(*args, name=name, audio_quality=audio_options)
+            result = downloader.download_yt_video_mp4(*args, name=name)
         else:
             result = downloader.download_yt_video_mp4(link.get(), mp3_mp4.get(), fast_fancy.get(),
                                                       option_lst.get()[:option_lst.get().find("p") + 1],
-                                                      option_lst.get(), name, audio_options)
+                                                      option_lst.get(), audio_options.get(), name)
     except Exception as e:
         error("An error occurred while Downloading the Video / Audio:\n" + traceback.format_exc())
         result = language.get_idx(18)
-    set_pixel_back(only_button=result != language.get_idx(19))
+    if not not_reset_buttons:
+        set_pixel_back(only_button=result != language.get_idx(19))
     hidden_text.config(text=result)
     root.title(language.get_idx(0))
 
@@ -212,7 +213,7 @@ def display_options(*event):
             playlist_lst = Playlist(link.get()).video_urls
             try:
                 playlist_formats = [
-                    {"Format": "mp3", "Audio": language.get_idx(24), "Pixel": language.get_idx(21)} for _ in
+                    {"Format": "mp3", "Audio": language.get_idx(24), "Pixel": language.get_idx(21), "AudioQuality": language.get_idx(34)} for _ in
                     range(len(playlist_lst))]
             except KeyError:
                 hidden_text.config(text=language.get_idx(9))
@@ -326,7 +327,7 @@ def continue_downloading():
                                 playlist_formats[playlist_index]["Audio"], playlist_formats[playlist_index]["Pixel"][
                                                                             :playlist_formats[playlist_index]["Pixel"].find(
                                                                                 "p") + 1],
-                                playlist_formats[playlist_index]["Pixel"])
+                                playlist_formats[playlist_index]["Pixel"], playlist_formats[playlist_index]["AudioQuality"], not_reset_buttons=True)
         else:
             try:
                 download_yt_video(playlist_lst[playlist_index], playlist_formats[0]["Format"],
@@ -334,14 +335,14 @@ def continue_downloading():
                                                                                 :playlist_formats[0][
                                                                                     "Pixel"].find(
                                                                                     "p") + 1],
-                                    playlist_formats[0]["Pixel"])
+                                    playlist_formats[0]["Pixel"], playlist_formats[0]["AudioQuality"], not_reset_buttons=True)
             except Exception as err:
                 tempQuality = get_resolutions(playlist_lst[playlist_index])[0][-1]
                 download_yt_video(playlist_lst[playlist_index], playlist_formats[0]["Format"],
                                     playlist_formats[0]["Audio"], tempQuality[
                                                                     :tempQuality.find(
                                                                         "p") + 1],
-                                    tempQuality)
+                                    tempQuality, playlist_formats[0]["AudioQuality"], not_reset_buttons=True)
         hidden_text.config(
             text=language.get_idx(27) + " " + str(playlist_index + 2) + "/" + str(len(playlist_lst)) + " " * 30)
         playlist_index += 1
@@ -423,13 +424,14 @@ def setIngameFormat():
     global fast_fancy, option_lst
     fast_fancy.set(playlist_formats[counter_playlist]["Audio"])
     option_lst.set(playlist_formats[counter_playlist]["Pixel"])
+    audio_options.set(playlist_formats[counter_playlist]["AudioQuality"])
     display_options()
 
 
 def setPlaylistFormat():
     global counter_playlist, playlist_formats, mp3_mp4, option_lst
 
-    new_format_dict = {"Format": mp3_mp4.get(), "Audio": fast_fancy.get(), "Pixel": option_lst.get()}
+    new_format_dict = {"Format": mp3_mp4.get(), "Audio": fast_fancy.get(), "Pixel": option_lst.get(), "AudioQuality": audio_options.get()}
     playlist_formats[counter_playlist] = new_format_dict
 
 

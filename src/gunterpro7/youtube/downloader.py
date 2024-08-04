@@ -1,6 +1,8 @@
 from tkinter import StringVar
+from typing import Optional
 
 import yt_dlp as youtube_dl
+from pytube import Stream
 from pytubefix import YouTube
 
 from src.gunterpro7.utils import audio_merger, utils
@@ -20,6 +22,10 @@ def valid_link(link: str) -> bool:
 
 def get_resolutions(link: str):
     yt = YouTube(link)
+    return get_resolutions_by_yt(yt)
+
+
+def get_resolutions_by_yt(yt: YouTube):
     lst, return_lst, final_return_lst, audio_list = [], [], [], []
 
     resolution = yt.streams.filter(adaptive=True)
@@ -52,12 +58,12 @@ def get_resolutions(link: str):
     return final_return_lst, yt.title, audio_list
 
 
-def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name: StringVar, audio_quality: StringVar) -> str:
+def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, audio_quality: str, name: StringVar) -> str:
     log("Formats: " + format_, format_2)
     log("Downloading (link: " + _link + ") ...")
 
-    if audio_quality.get() == language.get_idx(34):
-        error("Pixel Quality Invalid or not set! Value: " + audio_quality.get())
+    if audio_quality == language.get_idx(34):
+        error("Audio Quality Invalid or not set! Value: " + audio_quality)
         return language.get_idx(35)
     if "list" in _link:
         _link = _link.split("&list")[0]
@@ -83,13 +89,12 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
                     error("Download Failed! Err: No pixel Quality set!")
                     return language.get_idx(16)
                 else:
-                    yt.streams.filter(only_audio=True, abr=audio_quality.get()).first().download(filename=setname(name, _mp3_mp4) + "_temp.mp3")
+                    _get_yt_object_mp3(yt, audio_quality).download(filename=setname(name, _mp3_mp4) + "_temp.mp3")
 
-                    yt.streams.filter(file_extension="mp4", res=format_).first().download(
-                        filename=setname(name, _mp3_mp4) + "_temp.mp4")
+                    _get_yt_object_mp4(yt, format_).download(filename=setname(name, _mp3_mp4) + "_temp.mp4")
                     # log(option_lst.get()[option_lst.get().find("p")+1:])
 
-                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, fps=int(format_2[format_2.find("p") + 1:]), bitrate=utils.to_int(audio_quality.get()))
+                    audio_merger.combine_audio(setname(name, _mp3_mp4) + ".mp4", name, _mp3_mp4, fps=int(format_2[format_2.find("p") + 1:]), bitrate=utils.to_int(audio_quality))
 
                     log("Removing old audio and old movie file")
                     os.system('del "' + setname(name, _mp3_mp4) + '_temp.mp3"')
@@ -127,9 +132,32 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, name:
             if (setname(name, _mp3_mp4) + ".mp3") in os.listdir():
                 error("Download Failed! Err: File already exists!")
                 return language.get_idx(15)
-            yt.streams.filter(only_audio=True, abr=audio_quality.get()).first().download(filename=setname(name, _mp3_mp4) + ".mp3")
+            _get_yt_object_mp3(yt, audio_quality).download(filename=setname(name, _mp3_mp4) + ".mp3")
         success("Download Complete: " + _link)
     return language.get_idx(19)
+
+
+def _get_yt_object_mp3(yt: YouTube, audio_quality: str) -> Optional[Stream]:
+    stream = yt.streams.filter(only_audio=True, abr=audio_quality).first()
+    if stream is None:
+        resolutions = get_resolutions_by_yt(yt)
+        stream = yt.streams.filter(only_audio=True, abr=resolutions[2][-1]).first()
+        warn("Video has not the selected Audio Quality, downloading in lower quality: " + resolutions[2][-1])
+    else:
+        log("Downloading Video with Audio Quality: " + audio_quality)
+    return stream
+
+
+def _get_yt_object_mp4(yt: YouTube, pixels: str) -> Optional[Stream]:
+    stream = yt.streams.filter(file_extension="mp4", res=pixels).first()
+    if stream is None:
+        resolutions = get_resolutions_by_yt(yt)
+        stream = yt.streams.filter(file_extension="mp4", res=resolutions[0][-1].split("p")[0] + "p").first()
+        warn("Video has not the selected pixels, downloading in lower quality: " + resolutions[0][-1])
+    else:
+        log("Downloading Video with Pixels Quality: " + pixels)
+    return stream
+
 
 
 def setname(name, mp3_mp4):

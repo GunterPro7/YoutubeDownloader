@@ -1,3 +1,4 @@
+import colorama
 import ctypes
 import os
 
@@ -12,6 +13,7 @@ def __main__():
     ctypes.windll.kernel32.SetConsoleTitleW(title)
 
     # Init Logger
+    colorama.init()
     logger.__init__()  # TODO make a venv to only bundle packages for this build
     log("Starting YoutubeToMp3...")
     success("""
