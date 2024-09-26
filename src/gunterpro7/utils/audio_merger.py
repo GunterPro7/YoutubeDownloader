@@ -30,6 +30,22 @@ def combine_audio(outname: str, name: StringVar, mp3_mp4: StringVar, fps: int = 
     subprocess.run(command)
 
 
+def convert_webm_to_mp3(fileName: str, bitrate: int = 128):
+    log("Starting converting Video webm to mp3 format")
+
+    # ffmpeg -i input.webm -vn -ab 192k -ar 44100 -y output.mp3
+
+    ffmpeg_path = os.path.join(config.get_resources_path(), os.path.pardir, "ffmpeg")
+    command = [
+        ffmpeg_path,
+        "-i", fileName.replace(".mp3", ".webm"),
+        "-vn",
+        "-ab", str(bitrate) + "k",
+        "-ar", "44100",
+        "-y", fileName
+    ]
+    subprocess.run(command)
+
 def setname(name: StringVar, mp3_mp4):
     name = name.get()
     if name == "":

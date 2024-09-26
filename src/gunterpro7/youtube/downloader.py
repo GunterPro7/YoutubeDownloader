@@ -132,7 +132,9 @@ def download_yt_video_mp4(_link, _mp3_mp4, _fast_fancy, format_, format_2, audio
             if (setname(name, _mp3_mp4) + ".mp3") in os.listdir():
                 error("Download Failed! Err: File already exists!")
                 return language.get_idx(15)
-            _get_yt_object_mp3(yt, audio_quality).download(filename=setname(name, _mp3_mp4) + ".mp3")
+            _get_yt_object_mp3(yt, audio_quality).download(filename=setname(name, _mp3_mp4) + ".webm")
+            audio_merger.convert_webm_to_mp3(setname(name, _mp3_mp4) + ".mp3", utils.to_int(audio_quality))
+            os.system('del "' + setname(name, _mp3_mp4) + '.webm"')
         success("Download Complete: " + _link)
     return language.get_idx(19)
 
